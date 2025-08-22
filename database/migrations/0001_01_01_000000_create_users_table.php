@@ -13,12 +13,34 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->uuid('uuid')->unique();
+            $table->string('first_name');
+            $table->string('last_name');
             $table->string('email')->unique();
+            $table->string('phone')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->rememberToken();
+            $table->string('profile_image')->nullable();
+            $table->text('bio')->nullable();
+
+            // OTP fields
+            $table->string('otp', 6)->nullable();
+            $table->timestamp('otp_expires_at')->nullable();
+
+            // 2FA fields
+            $table->boolean('two_factor_enabled')->default(false);
+            $table->string('two_factor_code', 6)->nullable();
+            $table->timestamp('two_factor_expires_at')->nullable();
+
+            // Status and tracking
+            $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
+            $table->timestamp('last_login_at')->nullable();
+
             $table->timestamps();
+
+            $table->index(['email', 'status']);
+            $table->index(['otp', 'otp_expires_at']);
+            $table->index(['two_factor_code', 'two_factor_expires_at']);
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
