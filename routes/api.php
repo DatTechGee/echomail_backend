@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\NewsletterController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CampaignController;
 use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Api\ImageController;
 
 Route::prefix('/v1')->group(function () {
     // Auth routes
@@ -43,6 +44,10 @@ Route::prefix('/v1')->group(function () {
             Route::get('/export', 'export');
             Route::get('/stats', 'stats');
         });
+    });
+
+    Route::controller(ImageController::class)->group(function () {
+            Route::post('/images/upload', 'upload');
     });
 
      // Protected contact routes (Admin only)

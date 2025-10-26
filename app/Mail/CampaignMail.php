@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Helper\BlockNoteParser;
 use App\Models\Campaign;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -14,10 +15,12 @@ class CampaignMail extends Mailable
     use Queueable, SerializesModels;
 
     public $campaign;
+    public $htmlContent;
 
     public function __construct(Campaign $campaign)
     {
         $this->campaign = $campaign;
+        $this->htmlContent = BlockNoteParser::parse($campaign->content);
     }
 
     public function envelope(): Envelope
@@ -33,6 +36,7 @@ class CampaignMail extends Mailable
             view: 'emails.campaign',
             with: [
                 'campaign' => $this->campaign,
+                'htmlContent' => $this->htmlContent,
             ],
         );
     }

@@ -55,12 +55,10 @@ class BlockNoteParser
                     $html .= self::renderBlock($child);
                 }
                 $html .= "</li>";
-                // Wrap in <ul> if it's the first item in a sequence
                 if (!isset($GLOBALS['in_list'])) {
                     $html = "<ul>" . $html;
                     $GLOBALS['in_list'] = true;
                 }
-                // Close the list if it's the last item
                 if (empty($children)) {
                     $html .= "</ul>";
                     unset($GLOBALS['in_list']);
@@ -85,9 +83,28 @@ class BlockNoteParser
 
             case 'image':
                 $url = $props['url'] ?? '';
-                $alt = $props['alt'] ?? '';
+                $alt = $props['name'] ?? $props['alt'] ?? '';
                 if ($url) {
-                    $html .= "<img src=\"{$url}\" alt=\"{$alt}\" style=\"max-width: 100%; height: auto;\">";
+                    $html .= "<img src=\"{$url}\" alt=\"{$alt}\" style=\"max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 1em 0;\">";
+                }
+                break;
+
+            case 'file':
+                $url = $props['url'] ?? '';
+                $name = $props['name'] ?? 'Download File';
+                if ($url) {
+                    // Check if it's a PDF
+                    if (str_ends_with(strtolower($url), '.pdf')) {
+                        $html .= '<a href="' . $url . '" class="pdf-attachment" target="_blank">';
+                        $html .= '<div class="pdf-icon">PDF</div>';
+                        $html .= '<div class="pdf-info">';
+                        $html .= '<div class="pdf-name">' . htmlspecialchars($name) . '</div>';
+                        $html .= '<div class="pdf-details">Click to view</div>';
+                        $html .= '</div>';
+                        $html .= '</a>';
+                    } else {
+                        $html .= "<a href=\"{$url}\" target=\"_blank\">{$name}</a>";
+                    }
                 }
                 break;
 
@@ -141,4 +158,3 @@ class BlockNoteParser
         return $html;
     }
 }
-
