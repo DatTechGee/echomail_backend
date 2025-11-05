@@ -22,6 +22,7 @@ class NewsletterController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|max:255',
             'name' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:20',
             'source' => 'required|in:website,social,search,referral,advertising,blog,other',
         ]);
 
@@ -41,6 +42,7 @@ class NewsletterController extends Controller
                     $existingSubscriber->resubscribe();
                     $existingSubscriber->update([
                         'name' => $request->name,
+                        'phone' => $request->phone,
                         'source' => $request->source,
                     ]);
 
@@ -61,6 +63,7 @@ class NewsletterController extends Controller
             $subscriber = NewsletterSubscriber::create([
                 'email' => $request->email,
                 'name' => $request->name,
+                'phone' => $request->phone,
                 'source' => $request->source,
             ]);
 
@@ -108,7 +111,8 @@ class NewsletterController extends Controller
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
                     $q->where('email', 'like', "%{$search}%")
-                      ->orWhere('name', 'like', "%{$search}%");
+                      ->orWhere('name', 'like', "%{$search}%")
+                      ->orWhere('phone', 'like', "%{$search}%");
                 });
             }
 
@@ -278,12 +282,13 @@ class NewsletterController extends Controller
                     'Content-Disposition' => 'attachment; filename="newsletter-subscribers.csv"',
                 ];
 
-                $csv = "Email,Name,Source,Status,Subscribed Date,Unsubscribed Date\n";
+                $csv = "Email,Name,Phone,Source,Status,Subscribed Date,Unsubscribed Date\n";
                 foreach ($subscribers as $subscriber) {
                     $csv .= sprintf(
-                        '"%s","%s","%s","%s","%s","%s"' . "\n",
+                        '"%s","%s","%s","%s","%s","%s","%s"' . "\n",
                         $subscriber->email,
                         $subscriber->name ?: '',
+                        $subscriber->phone ?: '',
                         $subscriber->source,
                         $subscriber->status,
                         $subscriber->subscribed_at->format('Y-m-d H:i:s'),
@@ -395,6 +400,7 @@ class NewsletterController extends Controller
             'uuid' => $subscriber->uuid,
             'email' => $subscriber->email,
             'name' => $subscriber->name,
+            'phone' => $subscriber->phone,
             'source' => $subscriber->source,
             'status' => $subscriber->status,
             'subscribed_at' => $subscriber->subscribed_at->toISOString(),

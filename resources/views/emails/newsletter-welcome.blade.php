@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Welcome to EchoMail Newsletter!</title>
+    <title>Welcome to Levelup Xperience Community!</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             font-family: 'Arial', sans-serif;
             line-height: 1.6;
-            color: #374151;
+            color: #1f2937;
             margin: 0;
             padding: 0;
             background-color: #f8fafc;
@@ -21,7 +21,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
         .header {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #2ECC71 0%, #1A9B7F 100%);
             padding: 40px 30px;
             text-align: center;
             color: white;
@@ -34,7 +34,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(139, 92, 246, 0.9) 100%);
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.95) 0%, rgba(26, 155, 127, 0.95) 100%);
         }
         .header-content {
             position: relative;
@@ -45,11 +45,12 @@
             font-weight: bold;
             margin-bottom: 8px;
             letter-spacing: -0.5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
         .tagline {
             font-size: 16px;
-            opacity: 0.95;
-            font-weight: 300;
+            opacity: 0.98;
+            font-weight: 400;
         }
         .content {
             padding: 40px 30px;
@@ -57,23 +58,23 @@
         }
         .title {
             font-size: 28px;
-            color: #1f2937;
+            color: #111827;
             margin-bottom: 20px;
             font-weight: 700;
             text-align: center;
         }
         .message {
             font-size: 16px;
-            color: #4b5563;
+            color: #374151;
             margin-bottom: 30px;
             line-height: 1.7;
         }
         .welcome-box {
-            background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+            background: linear-gradient(135deg, #d1f5e3, #e0f4ec);
             padding: 30px;
             border-radius: 15px;
             margin: 30px 0;
-            border: 2px solid #3b82f6;
+            border: 2px solid #2ECC71;
             text-align: center;
         }
         .welcome-icon {
@@ -82,7 +83,7 @@
         }
         .welcome-text {
             font-size: 18px;
-            color: #1e40af;
+            color: #117550;
             font-weight: 600;
             margin-bottom: 10px;
         }
@@ -91,9 +92,10 @@
             padding: 25px;
             border-radius: 10px;
             margin: 25px 0;
+            border: 1px solid #e5e7eb;
         }
         .benefits h3 {
-            color: #1f2937;
+            color: #111827;
             margin: 0 0 15px 0;
             font-size: 18px;
             font-weight: 700;
@@ -104,17 +106,19 @@
             list-style: none;
         }
         .benefits li {
-            margin-bottom: 8px;
-            color: #4b5563;
+            margin-bottom: 10px;
+            color: #374151;
             position: relative;
-            padding-left: 25px;
+            padding-left: 28px;
+            line-height: 1.6;
         }
         .benefits li::before {
             content: '✓';
             position: absolute;
             left: 0;
-            color: #10b981;
+            color: #2ECC71;
             font-weight: bold;
+            font-size: 18px;
         }
         .unsubscribe {
             background: #fef2f2;
@@ -126,12 +130,12 @@
         }
         .unsubscribe p {
             margin: 0;
-            color: #991b1b;
+            color: #7f1d1d;
             font-size: 14px;
         }
         .unsubscribe a {
-            color: #dc2626;
-            text-decoration: none;
+            color: #991b1b;
+            text-decoration: underline;
             font-weight: 600;
         }
         .footer {
@@ -142,12 +146,12 @@
             font-size: 14px;
         }
         .divider {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            background: linear-gradient(135deg, #2ECC71, #1A9B7F);
             height: 4px;
             width: 100%;
         }
         .brand-highlight {
-            color: #3b82f6;
+            color: #1A9B7F;
             font-weight: 600;
         }
 
@@ -172,42 +176,42 @@
     <div class="container">
         <div class="header">
             <div class="header-content">
-                <div class="logo">EchoMail</div>
-                <div class="tagline">Email Campaign Management</div>
+                <div class="logo">Levelup Xperience</div>
+                <div class="tagline">Connect • Collaborate • Grow</div>
             </div>
         </div>
 
         <div class="divider"></div>
 
         <div class="content">
-            <div class="title">Welcome to Our Newsletter!</div>
+            <div class="title">Welcome to Our Community!</div>
 
             <div class="message">
                 <p>Hi{{ $subscriber->name ? ' ' . $subscriber->name : '' }},</p>
-                <p>Thank you for subscribing to the <span class="brand-highlight">EchoMail</span> newsletter! We're excited to have you as part of our community of email marketing enthusiasts.</p>
+                <p>Thank you for joining the waitlist for <span class="brand-highlight">Levelup Xperience</span>! We're excited to have you as part of our growing community of freelancers, content creators, and lifelong learners.</p>
             </div>
 
             <div class="welcome-box">
                 <div class="welcome-icon">🎉</div>
-                <div class="welcome-text">You're Now Subscribed!</div>
-                <p style="color: #4b5563; margin: 0;">Get ready for valuable insights delivered to your inbox</p>
+                <div class="welcome-text">You're on the Waitlist!</div>
+                <p style="color: #374151; margin: 0;">Be the first to know when we launch</p>
             </div>
 
             <div class="benefits">
-                <h3>What to Expect:</h3>
+                <h3>What Awaits You:</h3>
                 <ul>
-                    <li>Weekly email marketing tips and strategies</li>
-                    <li>Exclusive content and industry insights</li>
-                    <li>Early access to new features and updates</li>
-                    <li>Case studies from successful campaigns</li>
-                    <li>Best practices from email marketing experts</li>
+                    <li>Connect with talented freelancers and creators worldwide</li>
+                    <li>Access exclusive learning resources and workshops</li>
+                    <li>Collaborate on exciting projects and opportunities</li>
+                    <li>Early access to community features and events</li>
+                    <li>Network with industry experts and mentors</li>
                 </ul>
             </div>
 
             <div class="message">
-                <p>We respect your privacy and will never spam you. Our newsletters are carefully crafted to provide real value to help you succeed with your email marketing efforts.</p>
-                <p>Stay tuned for your first newsletter coming soon!</p>
-                <p>Best regards,<br>The EchoMail Team</p>
+                <p>We're building something special and can't wait to share it with you. As a waitlist member, you'll get priority access when we launch and exclusive benefits reserved just for early supporters.</p>
+                <p>Stay tuned for updates on our progress!</p>
+                <p>Best regards,<br>The Levelup Xperience Team</p>
             </div>
 
             <!-- <div class="unsubscribe">
@@ -216,8 +220,8 @@
         </div>
 
         <div class="footer">
-            <p>&copy; {{ date('Y') }} EchoMail. All rights reserved.</p>
-            <p>Powerful email campaigns made simple.</p>
+            <p>&copy; {{ date('Y') }} Levelup Xperience. All rights reserved.</p>
+            <p>Empowering communities to grow together.</p>
         </div>
     </div>
 </body>

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>EchoMail - Your Verification Code</title>
+    <title>Levelup Xperience - Your Verification Code</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             font-family: 'Arial', sans-serif;
             line-height: 1.6;
-            color: #374151;
+            color: #1f2937;
             margin: 0;
             padding: 0;
             background-color: #f8fafc;
@@ -21,7 +21,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
         .header {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #2ECC71 0%, #1A9B7F 100%);
             padding: 40px 30px;
             text-align: center;
             color: white;
@@ -34,7 +34,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(139, 92, 246, 0.9) 100%);
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.95) 0%, rgba(26, 155, 127, 0.95) 100%);
         }
         .header-content {
             position: relative;
@@ -45,11 +45,12 @@
             font-weight: bold;
             margin-bottom: 8px;
             letter-spacing: -0.5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
         .tagline {
             font-size: 16px;
-            opacity: 0.95;
-            font-weight: 300;
+            opacity: 0.98;
+            font-weight: 400;
         }
         .content {
             padding: 40px 30px;
@@ -58,23 +59,23 @@
         }
         .title {
             font-size: 28px;
-            color: #1f2937;
+            color: #111827;
             margin-bottom: 20px;
             font-weight: 700;
         }
         .message {
             font-size: 16px;
-            color: #4b5563;
+            color: #374151;
             margin-bottom: 30px;
             text-align: left;
             line-height: 1.7;
         }
         .otp-container {
-            background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+            background: linear-gradient(135deg, #d1f5e3, #e0f4ec);
             padding: 30px;
             border-radius: 15px;
             margin: 30px 0;
-            border: 2px dashed #3b82f6;
+            border: 2px dashed #2ECC71;
             position: relative;
         }
         .otp-container::before {
@@ -90,7 +91,7 @@
         }
         .otp-label {
             font-size: 14px;
-            color: #1e40af;
+            color: #117550;
             font-weight: 600;
             margin-bottom: 15px;
             text-transform: uppercase;
@@ -100,19 +101,19 @@
             font-size: 42px;
             font-weight: bold;
             letter-spacing: 8px;
-            color: #1f2937;
+            color: #111827;
             font-family: 'Courier New', monospace;
             background: white;
             padding: 20px;
             border-radius: 10px;
-            border: 1px solid #e5e7eb;
+            border: 2px solid #2ECC71;
             display: inline-block;
             margin: 10px 0;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
         .expiry-notice {
             font-size: 14px;
-            color: #1e40af;
+            color: #117550;
             font-weight: 600;
             margin-top: 15px;
         }
@@ -121,18 +122,18 @@
             padding: 20px;
             border-radius: 10px;
             margin-top: 30px;
-            border-left: 4px solid #ef4444;
+            border-left: 4px solid #dc2626;
             text-align: left;
         }
         .security-note h4 {
-            color: #dc2626;
+            color: #991b1b;
             margin: 0 0 10px 0;
             font-size: 16px;
             font-weight: 700;
         }
         .security-note p {
             margin: 0;
-            color: #991b1b;
+            color: #7f1d1d;
             font-size: 14px;
             line-height: 1.6;
         }
@@ -144,12 +145,12 @@
             font-size: 14px;
         }
         .divider {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            background: linear-gradient(135deg, #2ECC71, #1A9B7F);
             height: 4px;
             width: 100%;
         }
         .brand-highlight {
-            color: #3b82f6;
+            color: #1A9B7F;
             font-weight: 600;
         }
 
@@ -179,8 +180,8 @@
     <div class="container">
         <div class="header">
             <div class="header-content">
-                <div class="logo">EchoMail</div>
-                <div class="tagline">Email Campaign Management</div>
+                <div class="logo">Levelup Xperience</div>
+                <div class="tagline">Connect • Collaborate • Grow</div>
             </div>
         </div>
 
@@ -190,7 +191,7 @@
             <div class="title">Verification Required</div>
 
             <div class="message">
-                <p>We've received a request that requires verification of your identity. Please use the verification code below to complete your action securely on your <span class="brand-highlight">EchoMail</span> dashboard.</p>
+                <p>We've received a request that requires verification of your identity. Please use the verification code below to complete your action securely on your <span class="brand-highlight">Levelup Xperience</span> dashboard.</p>
             </div>
 
             <div class="otp-container">
@@ -201,13 +202,13 @@
 
             <div class="security-note">
                 <h4>🛡️ Security Reminder</h4>
-                <p><strong>Never share this code with anyone.</strong> The EchoMail team will never ask for your verification code via phone, email, or any other method. If you didn't request this code, please ignore this email or contact our support team immediately.</p>
+                <p><strong>Never share this code with anyone.</strong> The Levelup Xperience team will never ask for your verification code via phone, email, or any other method. If you didn't request this code, please ignore this email or contact our support team immediately.</p>
             </div>
         </div>
 
         <div class="footer">
-            <p>&copy; {{ date('Y') }} EchoMail. All rights reserved.</p>
-            <p>Powerful email campaigns made simple.</p>
+            <p>&copy; {{ date('Y') }} Levelup Xperience. All rights reserved.</p>
+            <p>Empowering communities to grow together.</p>
         </div>
     </div>
 </body>

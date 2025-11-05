@@ -14,6 +14,7 @@ class NewsletterSubscriber extends Model
         'uuid',
         'email',
         'name',
+        'phone',
         'source',
         'status',
         'subscribed_at',

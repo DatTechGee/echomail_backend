@@ -16,6 +16,7 @@ return new class extends Migration
             $table->uuid('uuid')->unique();
             $table->string('email')->unique();
             $table->string('name')->nullable();
+            $table->string('phone')->nullable();
             $table->string('source')->default('website'); // website, social, search, referral, advertising, blog, other
             $table->enum('status', ['active', 'unsubscribed'])->default('active');
             $table->timestamp('subscribed_at');

@@ -7,13 +7,13 @@
         body {
             font-family: 'Arial', sans-serif;
             line-height: 1.6;
-            color: #374151;
+            color: #1f2937;
             margin: 0;
             padding: 0;
-            background-color: #0066FF;
+            background-color: #2ECC71;
         }
         .outer-wrapper {
-            background-color: #0066FF;
+            background-color: #2ECC71;
             padding: 20px 20px 30px 20px;
         }
         .logo-section {
@@ -26,6 +26,7 @@
             font-size: 32px;
             font-weight: bold;
             color: #ffffff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
         .container {
             max-width: 600px;
@@ -43,7 +44,7 @@
             background-color: #ffffff;
             padding: 20px 30px;
             text-align: center;
-            color: #6b7280;
+            color: #4b5563;
             font-size: 13px;
             border-top: 1px solid #e5e7eb;
         }
@@ -53,12 +54,15 @@
             margin-top: 1.5em;
             margin-bottom: 0.5em;
             font-weight: 600;
-            color: #1f2937;
+            color: #111827;
         }
         .content h1 { font-size: 28px; }
         .content h2 { font-size: 24px; }
         .content h3 { font-size: 20px; }
-        .content p { margin-bottom: 1em; }
+        .content p {
+            margin-bottom: 1em;
+            color: #1f2937;
+        }
         .content img {
             max-width: 100%;
             height: auto;
@@ -67,15 +71,26 @@
             margin: 1em 0;
         }
         .content ul, .content ol { margin-bottom: 1em; padding-left: 20px; }
-        .content li { margin-bottom: 0.5em; }
-        .content a { color: #0066FF; text-decoration: none; font-weight: 500; }
-        .content a:hover { text-decoration: underline; }
+        .content li {
+            margin-bottom: 0.5em;
+            color: #1f2937;
+        }
+        .content a {
+            color: #1A9B7F;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+        .content a:hover {
+            color: #147a63;
+            text-decoration: underline;
+        }
         .content code {
             background-color: #f3f4f6;
             padding: 2px 6px;
             border-radius: 4px;
             font-family: monospace;
             font-size: 0.9em;
+            color: #1f2937;
         }
         .content strong { font-weight: 600; }
         .content em { font-style: italic; }
@@ -100,7 +115,7 @@
             border-radius: 8px;
             margin: 1em 0;
             text-decoration: none;
-            color: #374151;
+            color: #1f2937;
             transition: background-color 0.2s;
         }
         .pdf-attachment:hover {
@@ -124,7 +139,7 @@
         }
         .pdf-name {
             font-weight: 600;
-            color: #1f2937;
+            color: #111827;
             margin-bottom: 2px;
         }
         .pdf-details {
@@ -153,7 +168,7 @@
 <body>
     <div class="outer-wrapper">
         <div class="logo-section">
-            <div class="logo">Coinbase</div>
+            <div class="logo">Levelup Xperience</div>
         </div>
 
         <div class="container">
@@ -162,7 +177,7 @@
             </div>
 
             <div class="footer">
-                <p>&copy; {{ date('Y') }} Coinbase. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} Levelup Xperience. All rights reserved.</p>
             </div>
         </div>
     </div>

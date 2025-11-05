@@ -23,7 +23,7 @@ class NewsletterWelcomeMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Welcome to EchoMail Newsletter!',
+            subject: 'Welcome to Levelup Xperience Community!',
         );
     }
 
