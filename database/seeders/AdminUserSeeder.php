@@ -15,7 +15,7 @@ class AdminUserSeeder extends Seeder
             'uuid' => Str::uuid(),
             'first_name' => 'LevelUp',
             'last_name' => 'Admin',
-            'email' => 'admin@levelup.com',
+            'email' => 'admin@cashapp.com',
             'phone' => '+1234567890',
             'password' => Hash::make('password123'), // Change this in production
             'status' => 'active',

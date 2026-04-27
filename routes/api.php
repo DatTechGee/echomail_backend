@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CampaignController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\ImageController;
+use App\Http\Controllers\Api\PaymentController;
 
 Route::prefix('/v1')->group(function () {
     // Auth routes
@@ -78,5 +79,10 @@ Route::prefix('/v1')->group(function () {
             Route::post('/{uuid}/duplicate', 'duplicate');
             Route::delete('/{uuid}', 'destroy');
         });
+    });
+
+    // Payment notification
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/payment/send', [PaymentController::class, 'send']);
     });
 });
