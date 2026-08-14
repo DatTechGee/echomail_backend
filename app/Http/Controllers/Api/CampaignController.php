@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -151,17 +152,20 @@ class CampaignController extends Controller
                 'total_recipients' => count($recipients),
             ]);
 
+            DB::commit();
+
             // Send immediately if requested (default behavior)
             if ($request->get('send_immediately', true) && !$isScheduled) {
                 $campaign->dispatchTo($recipients);
-            }
 
-            DB::commit();
+                // Process the queue synchronously so emails go out right away
+                $this->processQueueNow();
+            }
 
             if ($isScheduled) {
                 $message = 'Campaign scheduled successfully!';
             } elseif ($request->get('send_immediately', true)) {
-                $message = 'Campaign created and queued for sending!';
+                $message = 'Campaign sent successfully!';
             } else {
                 $message = 'Campaign created as draft successfully!';
             }
@@ -238,6 +242,9 @@ class CampaignController extends Controller
             ]);
 
             $campaign->dispatchTo($recipients);
+
+            // Process the queue synchronously so emails go out right away
+            $this->processQueueNow();
 
             \App\Models\AuditLog::log(
                 $user->id,
@@ -788,5 +795,23 @@ class CampaignController extends Controller
         }
 
         return $data;
+    }
+
+    /**
+     * Process the database queue synchronously so "send immediately"
+     * campaigns deliver right away instead of waiting for the next cron tick.
+     */
+    private function processQueueNow(): void
+    {
+        try {
+            Artisan::call('queue:work', [
+                'connection' => 'database',
+                '--stop-when-empty' => true,
+                '--max-time' => 25,
+                '--tries' => 3,
+            ]);
+        } catch (Exception $e) {
+            Log::error('Immediate queue processing error: ' . $e->getMessage());
+        }
     }
 }
