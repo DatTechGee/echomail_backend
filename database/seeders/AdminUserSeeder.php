@@ -29,7 +29,7 @@ class AdminUserSeeder extends Seeder
 
         User::create([
             'uuid' => Str::uuid(),
-            'first_name' => 'LevelUp',
+            'first_name' => 'EchoMail',
             'last_name' => 'Admin',
             'email' => 'admin@admin.com',
             'phone' => '+1234567890',
