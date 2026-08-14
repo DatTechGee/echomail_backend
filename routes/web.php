@@ -2,12 +2,16 @@
 
 use App\Http\Controllers\CampaignTrackingController;
 use App\Http\Controllers\NewsletterOptInController;
+use App\Http\Controllers\SystemTickController;
 use App\Models\NewsletterSubscriber;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/tick/{token}', [SystemTickController::class, 'run'])
+    ->name('system.tick');
 
 Route::get('/campaigns/{campaign}/open/{token}', [CampaignTrackingController::class, 'open'])
     ->name('campaign.track.open');

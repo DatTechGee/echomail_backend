@@ -30,6 +30,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | External Cron Tick Token
+    |--------------------------------------------------------------------------
+    |
+    | Secret token used by the /tick/{token} endpoint so an external cron
+    | service can trigger dispatch and queue processing without SSH.
+    |
+    */
+
+    'tick_token' => env('TICK_TOKEN', ''),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Debug Mode
     |--------------------------------------------------------------------------
     |
