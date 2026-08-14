@@ -29,20 +29,21 @@ class DemoSeeder extends Seeder
         $this->createCampaigns();
         $this->createWebhook();
         $this->createAuditLogs();
+        $this->createTemplatesForDemoUser();
 
-        $this->command->info('Demo data seeded successfully for admin@admin.com');
+        $this->command->info('Demo data seeded successfully for demo@echomail.com');
     }
 
     private function createAdmin(): void
     {
         $this->admin = User::updateOrCreate(
-            ['email' => 'admin@admin.com'],
+            ['email' => 'demo@echomail.com'],
             [
                 'uuid' => Str::uuid(),
-                'first_name' => 'EchoMail',
-                'last_name' => 'Admin',
-                'phone' => '+234 900 000 0000',
-                'password' => Hash::make('Admin@12345'),
+                'first_name' => 'Demo',
+                'last_name' => 'Account',
+                'phone' => '+234 800 111 2222',
+                'password' => Hash::make('Demo@12345'),
                 'status' => 'active',
                 'email_verified_at' => now(),
                 'two_factor_enabled' => false,
@@ -478,5 +479,61 @@ class DemoSeeder extends Seeder
         $codes = ['+1', '+44', '+61', '+234', '+91', '+49', '+33', '+81'];
         $code = $codes[array_rand($codes)];
         return $code . ' ' . rand(100, 999) . ' ' . rand(100, 999) . ' ' . rand(1000, 9999);
+    }
+
+    private function createTemplatesForDemoUser(): void
+    {
+        $templates = [
+            [
+                'name' => 'Welcome Email',
+                'subject' => 'Welcome to EchoMail, {{first_name}}!',
+                'content' => json_encode([
+                    ['id' => Str::uuid(), 'type' => 'heading', 'props' => ['level' => 2], 'content' => [['type' => 'text', 'text' => 'Welcome aboard!', 'styles' => []]], 'children' => []],
+                    ['id' => Str::uuid(), 'type' => 'paragraph', 'props' => ['textAlignment' => 'left'], 'content' => [['type' => 'text', 'text' => 'Hi {{first_name}}, we are thrilled to have you with us. Your account is ready.', 'styles' => []]], 'children' => []],
+                ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+            ],
+            [
+                'name' => 'Weekly Newsletter',
+                'subject' => 'Your weekly digest, {{first_name}}',
+                'content' => json_encode([
+                    ['id' => Str::uuid(), 'type' => 'heading', 'props' => ['level' => 2], 'content' => [['type' => 'text', 'text' => "This Week's Highlights", 'styles' => []]], 'children' => []],
+                    ['id' => Str::uuid(), 'type' => 'paragraph', 'props' => ['textAlignment' => 'left'], 'content' => [['type' => 'text', 'text' => 'Hello {{first_name}}, here is what happened this week.', 'styles' => []]], 'children' => []],
+                ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+            ],
+            [
+                'name' => 'Promotional Offer',
+                'subject' => 'Exclusive offer just for you, {{first_name}}',
+                'content' => json_encode([
+                    ['id' => Str::uuid(), 'type' => 'heading', 'props' => ['level' => 2], 'content' => [['type' => 'text', 'text' => 'Limited Time Offer', 'styles' => []]], 'children' => []],
+                    ['id' => Str::uuid(), 'type' => 'paragraph', 'props' => ['textAlignment' => 'left'], 'content' => [['type' => 'text', 'text' => 'Hey {{first_name}}, use code ', 'styles' => []], ['type' => 'text', 'text' => 'ECHOMAIL20', 'styles' => ['bold' => true, 'code' => true]], ['type' => 'text', 'text' => ' to save 20%.', 'styles' => []]], 'children' => []],
+                ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+            ],
+            [
+                'name' => 'Product Update',
+                'subject' => "What's new for {{first_name}}",
+                'content' => json_encode([
+                    ['id' => Str::uuid(), 'type' => 'heading', 'props' => ['level' => 2], 'content' => [['type' => 'text', 'text' => 'Product Update', 'styles' => []]], 'children' => []],
+                    ['id' => Str::uuid(), 'type' => 'paragraph', 'props' => ['textAlignment' => 'left'], 'content' => [['type' => 'text', 'text' => 'Hi {{first_name}}, here is what we shipped this month.', 'styles' => []]], 'children' => []],
+                ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+            ],
+            [
+                'name' => 'Re-engagement',
+                'subject' => 'We miss you, {{first_name}}!',
+                'content' => json_encode([
+                    ['id' => Str::uuid(), 'type' => 'heading', 'props' => ['level' => 2], 'content' => [['type' => 'text', 'text' => 'We Miss You!', 'styles' => []]], 'children' => []],
+                    ['id' => Str::uuid(), 'type' => 'paragraph', 'props' => ['textAlignment' => 'left'], 'content' => [['type' => 'text', 'text' => "It's been a while, {{first_name}}. We would love to have you back.", 'styles' => []]], 'children' => []],
+                ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+            ],
+        ];
+
+        foreach ($templates as $template) {
+            CampaignTemplate::updateOrCreate(
+                ['user_id' => $this->admin->id, 'name' => $template['name']],
+                [
+                    'subject' => $template['subject'],
+                    'content' => $template['content'],
+                ]
+            );
+        }
     }
 }
