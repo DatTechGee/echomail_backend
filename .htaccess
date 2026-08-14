@@ -1,9 +1,13 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # If the request already targets the public folder, stop rewriting
-    RewriteRule ^public($|/) - [L]
-
-    # Rewrite everything else into the Laravel public directory
+    # Serve real asset files from the public directory (images, css, storage)
+    RewriteCond %{REQUEST_URI} \.(css|js|jpg|jpeg|png|gif|ico|svg|webp|woff2?|eot|ttf|otf|map|txt|xml)$ [NC,OR]
+    RewriteCond %{REQUEST_URI} ^/echomail/storage/ [NC]
     RewriteRule ^(.*)$ public/$1 [L]
+
+    # Send everything else to the front controller
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
 </IfModule>
