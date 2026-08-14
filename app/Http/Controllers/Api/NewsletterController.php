@@ -37,9 +37,10 @@ class NewsletterController extends Controller
             if ($existingSubscriber) {
                 if ($existingSubscriber->status === 'active') {
                     return ResponseHelper::error(0, 'This email is already subscribed to our newsletter.', [], 409);
-                } else {
-                    // Reactivate unsubscribed user
-                    $existingSubscriber->resubscribe();
+                }
+
+                if ($existingSubscriber->status === 'pending') {
+                    // Re-send the confirmation email
                     $existingSubscriber->update([
                         'name' => $request->name,
                         'phone' => $request->phone,
@@ -50,29 +51,49 @@ class NewsletterController extends Controller
 
                     return ResponseHelper::success(
                         1,
-                        'Welcome back! You have been resubscribed to our newsletter.',
+                        'Almost there! Check your email to confirm your subscription.',
                         [
                             'subscriber' => $this->formatSubscriberData($existingSubscriber),
                         ],
                         200
                     );
                 }
+
+                // Reactivate unsubscribed user
+                $existingSubscriber->resubscribe();
+                $existingSubscriber->update([
+                    'name' => $request->name,
+                    'phone' => $request->phone,
+                    'source' => $request->source,
+                ]);
+
+                Mail::to($existingSubscriber->email)->send(new NewsletterWelcomeMail($existingSubscriber));
+
+                return ResponseHelper::success(
+                    1,
+                    'Welcome back! You have been resubscribed to our newsletter.',
+                    [
+                        'subscriber' => $this->formatSubscriberData($existingSubscriber),
+                    ],
+                    200
+                );
             }
 
-            // Create new subscriber
+            // Create new subscriber (pending until email is verified)
             $subscriber = NewsletterSubscriber::create([
                 'email' => $request->email,
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'source' => $request->source,
+                'status' => 'pending',
             ]);
 
-            // Send welcome email
+            // Send confirmation email
             Mail::to($subscriber->email)->send(new NewsletterWelcomeMail($subscriber));
 
             return ResponseHelper::success(
                 1,
-                'Successfully subscribed to newsletter! Check your email for a welcome message.',
+                'Almost there! Check your email to confirm your subscription.',
                 [
                     'subscriber' => $this->formatSubscriberData($subscriber),
                 ],
@@ -93,7 +114,7 @@ class NewsletterController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'search' => 'nullable|string|max:255',
-                'status' => 'nullable|in:all,active,unsubscribed',
+                'status' => 'nullable|in:all,active,pending,unsubscribed',
                 'source' => 'nullable|in:website,social,search,referral,advertising,blog,other',
                 'per_page' => 'nullable|integer|min:1|max:100',
                 'sort_by' => 'nullable|in:email,name,subscribed_at,status,source',
@@ -139,6 +160,7 @@ class NewsletterController extends Controller
             $stats = [
                 'total' => NewsletterSubscriber::count(),
                 'active' => NewsletterSubscriber::active()->count(),
+                'pending' => NewsletterSubscriber::pending()->count(),
                 'unsubscribed' => NewsletterSubscriber::unsubscribed()->count(),
                 'today' => NewsletterSubscriber::whereDate('subscribed_at', today())->count(),
                 'this_week' => NewsletterSubscriber::whereBetween('subscribed_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
@@ -208,6 +230,14 @@ class NewsletterController extends Controller
 
             $subscriber->delete();
 
+            \App\Models\AuditLog::log(
+                \Illuminate\Support\Facades\Auth::id(),
+                'subscriber.deleted',
+                'NewsletterSubscriber',
+                $subscriber->uuid,
+                ['email' => $subscriber->email]
+            );
+
             return ResponseHelper::success(1, 'Subscriber deleted successfully.', [], 200);
 
         } catch (Exception $e) {
@@ -233,6 +263,14 @@ class NewsletterController extends Controller
         try {
             $deletedCount = NewsletterSubscriber::whereIn('uuid', $request->subscriber_ids)->delete();
 
+            \App\Models\AuditLog::log(
+                \Illuminate\Support\Facades\Auth::id(),
+                'subscriber.bulk_deleted',
+                'NewsletterSubscriber',
+                null,
+                ['deleted_count' => $deletedCount, 'uuids' => $request->subscriber_ids]
+            );
+
             return ResponseHelper::success(
                 1,
                 "Successfully deleted {$deletedCount} subscriber(s).",
@@ -253,7 +291,7 @@ class NewsletterController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'status' => 'nullable|in:all,active,unsubscribed',
+                'status' => 'nullable|in:all,active,pending,unsubscribed',
                 'source' => 'nullable|in:website,social,search,referral,advertising,blog,other',
                 'format' => 'nullable|in:csv,json',
             ]);
@@ -282,16 +320,17 @@ class NewsletterController extends Controller
                     'Content-Disposition' => 'attachment; filename="newsletter-subscribers.csv"',
                 ];
 
-                $csv = "Email,Name,Phone,Source,Status,Subscribed Date,Unsubscribed Date\n";
+                $csv = "Email,Name,Phone,Source,Status,Subscribed Date,Verified Date,Unsubscribed Date\n";
                 foreach ($subscribers as $subscriber) {
                     $csv .= sprintf(
-                        '"%s","%s","%s","%s","%s","%s","%s"' . "\n",
+                        '"%s","%s","%s","%s","%s","%s","%s","%s"' . "\n",
                         $subscriber->email,
                         $subscriber->name ?: '',
                         $subscriber->phone ?: '',
                         $subscriber->source,
                         $subscriber->status,
                         $subscriber->subscribed_at->format('Y-m-d H:i:s'),
+                        $subscriber->verified_at ? $subscriber->verified_at->format('Y-m-d H:i:s') : '',
                         $subscriber->unsubscribed_at ? $subscriber->unsubscribed_at->format('Y-m-d H:i:s') : ''
                     );
                 }
@@ -348,6 +387,7 @@ class NewsletterController extends Controller
             $stats = [
                 'total_subscribers' => NewsletterSubscriber::count(),
                 'active_subscribers' => NewsletterSubscriber::active()->count(),
+                'pending' => NewsletterSubscriber::pending()->count(),
                 'unsubscribed' => NewsletterSubscriber::unsubscribed()->count(),
                 'subscribers_today' => NewsletterSubscriber::whereDate('subscribed_at', today())->count(),
                 'subscribers_this_week' => NewsletterSubscriber::whereBetween('subscribed_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
@@ -404,7 +444,9 @@ class NewsletterController extends Controller
             'source' => $subscriber->source,
             'status' => $subscriber->status,
             'subscribed_at' => $subscriber->subscribed_at->toISOString(),
+            'verified_at' => $subscriber->verified_at?->toISOString(),
             'unsubscribed_at' => $subscriber->unsubscribed_at?->toISOString(),
+            'preferences' => $subscriber->preferences,
             'created_at' => $subscriber->created_at->toISOString(),
         ];
     }

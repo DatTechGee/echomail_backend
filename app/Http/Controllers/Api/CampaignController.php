@@ -2,13 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Helper\BlockNoteParser;
 use App\Helper\ResponseHelper;
 use App\Http\Controllers\Controller;
-use App\Mail\CampaignMail;
 use App\Models\Campaign;
-use App\Models\Contact;
-use App\Models\NewsletterSubscriber;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +23,7 @@ class CampaignController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'search' => 'nullable|string|max:255',
-                'status' => 'nullable|in:draft,sent,failed',
+                'status' => 'nullable|in:draft,scheduled,sending,sent,failed',
                 'per_page' => 'nullable|integer|min:1|max:100',
                 'page' => 'nullable|integer|min:1',
                 'sort_by' => 'nullable|in:name,subject,sent_at,total_recipients',
@@ -107,6 +103,8 @@ class CampaignController extends Controller
             'recipient_config.manual_emails' => 'nullable|array',
             'recipient_config.manual_emails.*' => 'email',
             'send_immediately' => 'boolean',
+            'scheduled_at' => 'nullable|date',
+            'frequency' => 'nullable|in:once,daily,weekly,monthly',
         ]);
 
         if ($validator->fails()) {
@@ -115,6 +113,10 @@ class CampaignController extends Controller
 
         try {
             $user = Auth::user();
+
+            $isScheduled = $request->filled('frequency') || $request->filled('scheduled_at');
+
+            $frequency = $request->frequency === 'once' ? null : $request->frequency;
 
             DB::beginTransaction();
 
@@ -126,8 +128,14 @@ class CampaignController extends Controller
                 'content' => $request->content,
                 'recipient_config' => $request->recipient_config,
                 'created_by' => $user->id,
-                'status' => 'draft',
+                'status' => $isScheduled ? 'scheduled' : 'draft',
+                'scheduled_at' => $request->scheduled_at,
+                'frequency' => $frequency,
             ]);
+
+            if ($isScheduled && $request->frequency && $request->frequency !== 'once') {
+                $campaign->update(['next_run_at' => $campaign->computeNextRunAt($request->scheduled_at)]);
+            }
 
             // Get recipient list
             $recipients = $campaign->getRecipientList();
@@ -144,17 +152,23 @@ class CampaignController extends Controller
             ]);
 
             // Send immediately if requested (default behavior)
-            if ($request->get('send_immediately', true)) {
-                $this->sendCampaign($campaign, $recipients);
+            if ($request->get('send_immediately', true) && !$isScheduled) {
+                $campaign->dispatchTo($recipients);
             }
 
             DB::commit();
 
+            if ($isScheduled) {
+                $message = 'Campaign scheduled successfully!';
+            } elseif ($request->get('send_immediately', true)) {
+                $message = 'Campaign created and queued for sending!';
+            } else {
+                $message = 'Campaign created as draft successfully!';
+            }
+
             return ResponseHelper::success(
                 1,
-                $request->get('send_immediately', true)
-                    ? 'Campaign created and sent successfully!'
-                    : 'Campaign created as draft successfully!',
+                $message,
                 $this->formatCampaignData($campaign->fresh('creator'), true),
                 201
             );
@@ -218,11 +232,24 @@ class CampaignController extends Controller
                 return ResponseHelper::error(0, 'No recipients found for this campaign.', [], 400);
             }
 
-            $this->sendCampaign($campaign, $recipients);
+            $campaign->update([
+                'recipient_emails' => $recipients,
+                'total_recipients' => count($recipients),
+            ]);
+
+            $campaign->dispatchTo($recipients);
+
+            \App\Models\AuditLog::log(
+                $user->id,
+                'campaign.sent',
+                'Campaign',
+                $campaign->uuid,
+                ['recipient_count' => count($recipients)]
+            );
 
             return ResponseHelper::success(
                 1,
-                'Campaign sent successfully!',
+                'Campaign is being sent!',
                 $this->formatCampaignData($campaign->fresh('creator'), true),
                 200
             );
@@ -252,6 +279,14 @@ class CampaignController extends Controller
             }
 
             $campaign->delete();
+
+            \App\Models\AuditLog::log(
+                $user->id,
+                'campaign.deleted',
+                'Campaign',
+                $campaign->uuid,
+                ['name' => $campaign->name]
+            );
 
             return ResponseHelper::success(1, 'Campaign deleted successfully.', [], 200);
 
@@ -291,6 +326,14 @@ class CampaignController extends Controller
                 'total_recipients' => count($recipients),
             ]);
 
+            \App\Models\AuditLog::log(
+                $user->id,
+                'campaign.duplicated',
+                'Campaign',
+                $originalCampaign->uuid,
+                ['new_campaign' => $duplicatedCampaign->uuid]
+            );
+
             return ResponseHelper::success(
                 1,
                 'Campaign duplicated successfully.',
@@ -301,6 +344,47 @@ class CampaignController extends Controller
         } catch (Exception $e) {
             Log::error('Campaign duplicate error: ' . $e->getMessage() . ' - Line: ' . $e->getLine());
             return ResponseHelper::error(0, 'Unable to duplicate campaign.', [], 500);
+        }
+    }
+
+    /**
+     * Retry failed recipients of a campaign
+     */
+    public function retry($uuid)
+    {
+        try {
+            $user = Auth::user();
+            $campaign = Campaign::byUser($user->id)->where('uuid', $uuid)->first();
+
+            if (!$campaign) {
+                return ResponseHelper::error(0, 'Campaign not found.', [], 404);
+            }
+
+            if ($campaign->recipients()->failed()->count() === 0) {
+                return ResponseHelper::error(0, 'No failed recipients to retry.', [], 400);
+            }
+
+            $failedCount = $campaign->recipients()->failed()->count();
+            $campaign->retryFailed();
+
+            \App\Models\AuditLog::log(
+                $user->id,
+                'campaign.retried',
+                'Campaign',
+                $campaign->uuid,
+                ['retry_count' => $failedCount]
+            );
+
+            return ResponseHelper::success(
+                1,
+                'Failed recipients are being retried!',
+                $this->formatCampaignData($campaign->fresh('creator'), true),
+                200
+            );
+
+        } catch (Exception $e) {
+            Log::error('Campaign retry error: ' . $e->getMessage() . ' - Line: ' . $e->getLine());
+            return ResponseHelper::error(0, 'Unable to retry campaign.', [], 500);
         }
     }
 
@@ -349,6 +433,258 @@ class CampaignController extends Controller
     }
 
     /**
+     * Send a test email for a campaign
+     */
+    public function testSend(Request $request, $uuid)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return ResponseHelper::error(0, $validator->errors()->first(), $validator->errors()->all(), 400);
+        }
+
+        try {
+            $user = Auth::user();
+            $campaign = Campaign::byUser($user->id)->where('uuid', $uuid)->first();
+
+            if (!$campaign) {
+                return ResponseHelper::error(0, 'Campaign not found.', [], 404);
+            }
+
+            $personalization = [
+                'first_name' => 'Test',
+                'last_name' => 'User',
+                'full_name' => 'Test User',
+                'email' => $request->email,
+            ];
+
+            $token = \Illuminate\Support\Str::random(32);
+            Mail::to($request->email)->send(new \App\Mail\CampaignMail($campaign, $request->email, $token, $personalization));
+
+            \App\Models\AuditLog::log(
+                $user->id,
+                'campaign.test_sent',
+                'Campaign',
+                $campaign->uuid,
+                ['to' => $request->email]
+            );
+
+            return ResponseHelper::success(1, 'Test email sent successfully.', [], 200);
+
+        } catch (Exception $e) {
+            Log::error('Campaign test send error: ' . $e->getMessage() . ' - Line: ' . $e->getLine());
+            return ResponseHelper::error(0, 'Unable to send test email.', [], 500);
+        }
+    }
+
+    /**
+     * Get rendered preview of a campaign
+     */
+    public function preview($uuid)
+    {
+        try {
+            $user = Auth::user();
+            $campaign = Campaign::byUser($user->id)->where('uuid', $uuid)->first();
+
+            if (!$campaign) {
+                return ResponseHelper::error(0, 'Campaign not found.', [], 404);
+            }
+
+            $personalization = [
+                'first_name' => 'Test',
+                'last_name' => 'User',
+                'full_name' => 'Test User',
+                'email' => 'preview@example.com',
+            ];
+
+            $token = \Illuminate\Support\Str::random(32);
+            $mail = new \App\Mail\CampaignMail($campaign, 'preview@example.com', $token, $personalization);
+
+            $rendered = $mail->render();
+            $subject = $mail->envelope()->subject;
+
+            return ResponseHelper::success(
+                1,
+                'Campaign preview generated successfully.',
+                [
+                    'subject' => $subject,
+                    'html' => $rendered,
+                ],
+                200
+            );
+
+        } catch (Exception $e) {
+            Log::error('Campaign preview error: ' . $e->getMessage() . ' - Line: ' . $e->getLine());
+            return ResponseHelper::error(0, 'Unable to generate campaign preview.', [], 500);
+        }
+    }
+
+    /**
+     * Get recipients of a campaign with drill-down
+     */
+    public function recipients(Request $request, $uuid)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'nullable|in:pending,sent,failed,bounced',
+            'search' => 'nullable|string|max:255',
+            'per_page' => 'nullable|integer|min:1|max:100',
+        ]);
+
+        if ($validator->fails()) {
+            return ResponseHelper::error(0, $validator->errors()->first(), $validator->errors()->all(), 400);
+        }
+
+        try {
+            $user = Auth::user();
+            $campaign = Campaign::byUser($user->id)->where('uuid', $uuid)->first();
+
+            if (!$campaign) {
+                return ResponseHelper::error(0, 'Campaign not found.', [], 404);
+            }
+
+            $query = $campaign->recipients()->orderBy('created_at', 'desc');
+
+            if ($request->status) {
+                $query->where('status', $request->status);
+            }
+
+            if ($request->search) {
+                $search = $request->search;
+                $query->where('email', 'like', "%{$search}%");
+            }
+
+            $recipients = $query->paginate($request->per_page ?: 15);
+
+            return ResponseHelper::success(
+                1,
+                'Recipients retrieved successfully.',
+                [
+                    'recipients' => $recipients->items(),
+                    'pagination' => [
+                        'current_page' => $recipients->currentPage(),
+                        'last_page' => $recipients->lastPage(),
+                        'per_page' => $recipients->perPage(),
+                        'total' => $recipients->total(),
+                        'from' => $recipients->firstItem(),
+                        'to' => $recipients->lastItem(),
+                    ],
+                    'summary' => [
+                        'pending' => $campaign->recipients()->pending()->count(),
+                        'sent' => $campaign->recipients()->sent()->count(),
+                        'failed' => $campaign->recipients()->failed()->count(),
+                        'bounced' => $campaign->recipients()->bounced()->count(),
+                        'opened' => $campaign->recipients()->opened()->count(),
+                        'clicked' => $campaign->recipients()->clicked()->count(),
+                    ],
+                ],
+                200
+            );
+
+        } catch (Exception $e) {
+            Log::error('Campaign recipients error: ' . $e->getMessage() . ' - Line: ' . $e->getLine());
+            return ResponseHelper::error(0, 'Unable to retrieve recipients.', [], 500);
+        }
+    }
+
+    /**
+     * Export recipients of a campaign as CSV
+     */
+    public function exportRecipients($uuid)
+    {
+        try {
+            $user = Auth::user();
+            $campaign = Campaign::byUser($user->id)->where('uuid', $uuid)->first();
+
+            if (!$campaign) {
+                return ResponseHelper::error(0, 'Campaign not found.', [], 404);
+            }
+
+            $recipients = $campaign->recipients()->orderBy('created_at', 'asc')->get();
+
+            $headers = [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="campaign-' . $campaign->uuid . '-recipients.csv"',
+            ];
+
+            $csv = "Email,Status,Opened At,Clicked At,Bounced At,Error\n";
+            foreach ($recipients as $recipient) {
+                $csv .= sprintf(
+                    '"%s","%s","%s","%s","%s","%s"' . "\n",
+                    $recipient->email,
+                    $recipient->status,
+                    $recipient->opened_at ? $recipient->opened_at->format('Y-m-d H:i:s') : '',
+                    $recipient->clicked_at ? $recipient->clicked_at->format('Y-m-d H:i:s') : '',
+                    $recipient->bounced_at ? $recipient->bounced_at->format('Y-m-d H:i:s') : '',
+                    $recipient->error_message ?: ''
+                );
+            }
+
+            \App\Models\AuditLog::log(
+                $user->id,
+                'campaign.exported',
+                'Campaign',
+                $campaign->uuid,
+                ['recipient_count' => $recipients->count()]
+            );
+
+            return response($csv, 200, $headers);
+
+        } catch (Exception $e) {
+            Log::error('Campaign export error: ' . $e->getMessage() . ' - Line: ' . $e->getLine());
+            return ResponseHelper::error(0, 'Unable to export recipients.', [], 500);
+        }
+    }
+
+    /**
+     * Mark recipients of a campaign as bounced
+     */
+    public function markBounced(Request $request, $uuid)
+    {
+        $validator = Validator::make($request->all(), [
+            'emails' => 'required|array|min:1',
+            'emails.*' => 'required|email',
+        ]);
+
+        if ($validator->fails()) {
+            return ResponseHelper::error(0, $validator->errors()->first(), $validator->errors()->all(), 400);
+        }
+
+        try {
+            $user = Auth::user();
+            $campaign = Campaign::byUser($user->id)->where('uuid', $uuid)->first();
+
+            if (!$campaign) {
+                return ResponseHelper::error(0, 'Campaign not found.', [], 404);
+            }
+
+            $updated = $campaign->recipients()
+                ->whereIn('email', $request->emails)
+                ->whereNull('bounced_at')
+                ->update([
+                    'status' => 'bounced',
+                    'bounced_at' => now(),
+                ]);
+
+            if ($updated > 0) {
+                $campaign->syncStats();
+            }
+
+            return ResponseHelper::success(
+                1,
+                'Recipients marked as bounced.',
+                ['updated' => $updated],
+                200
+            );
+
+        } catch (Exception $e) {
+            Log::error('Campaign mark bounced error: ' . $e->getMessage() . ' - Line: ' . $e->getLine());
+            return ResponseHelper::error(0, 'Unable to mark recipients as bounced.', [], 500);
+        }
+    }
+
+    /**
      * Get campaign statistics
      */
     public function getStats()
@@ -365,12 +701,46 @@ class CampaignController extends Controller
                 ->get()
                 ->map(fn($campaign) => $this->formatCampaignData($campaign));
 
+            // Monthly activity (last 6 months)
+            $monthlyActivity = [];
+            for ($i = 5; $i >= 0; $i--) {
+                $month = now()->subMonths($i);
+                $monthlyActivity[] = [
+                    'month' => $month->format('M Y'),
+                    'sent' => (int) Campaign::byUser($user->id)
+                        ->whereYear('sent_at', $month->year)
+                        ->whereMonth('sent_at', $month->month)
+                        ->sum('total_sent'),
+                    'opens' => (int) Campaign::byUser($user->id)
+                        ->whereYear('sent_at', $month->year)
+                        ->whereMonth('sent_at', $month->month)
+                        ->sum('opens'),
+                    'clicks' => (int) Campaign::byUser($user->id)
+                        ->whereYear('sent_at', $month->year)
+                        ->whereMonth('sent_at', $month->month)
+                        ->sum('clicks'),
+                ];
+            }
+
+            // Engagement funnel
+            $totalSent = Campaign::byUser($user->id)->sum('total_sent');
+            $totalOpens = Campaign::byUser($user->id)->sum('opens');
+            $totalClicks = Campaign::byUser($user->id)->sum('clicks');
+
             return ResponseHelper::success(
                 1,
                 'Campaign statistics retrieved successfully.',
                 [
                     'stats' => $stats,
                     'recent_campaigns' => $recentCampaigns,
+                    'monthly_activity' => $monthlyActivity,
+                    'engagement' => [
+                        'sent' => (int) $totalSent,
+                        'opened' => (int) $totalOpens,
+                        'clicked' => (int) $totalClicks,
+                        'open_rate' => $totalSent > 0 ? round(($totalOpens / $totalSent) * 100, 2) : 0,
+                        'click_rate' => $totalSent > 0 ? round(($totalClicks / $totalSent) * 100, 2) : 0,
+                    ],
                 ],
                 200
             );
@@ -379,30 +749,6 @@ class CampaignController extends Controller
             Log::error('Campaign stats error: ' . $e->getMessage() . ' - Line: ' . $e->getLine());
             return ResponseHelper::error(0, 'Unable to retrieve statistics.', [], 500);
         }
-    }
-
-    /**
-     * Send campaign to recipients (direct sending, no queue)
-     */
-    private function sendCampaign(Campaign $campaign, array $recipients)
-    {
-        $successCount = 0;
-        $failureCount = 0;
-
-        foreach ($recipients as $email) {
-            try {
-                Mail::to($email)->send(new CampaignMail($campaign));
-                $successCount++;
-                Log::info("Successfully sent campaign {$campaign->uuid} to: {$email}");
-            } catch (Exception $emailException) {
-                $failureCount++;
-                Log::error("Failed to send campaign {$campaign->uuid} to {$email}: " . $emailException->getMessage());
-            }
-        }
-
-        $campaign->markAsSent($successCount, $failureCount);
-
-        Log::info("Campaign {$campaign->uuid} sending completed. Success: {$successCount}, Failed: {$failureCount}");
     }
 
     /**
@@ -424,6 +770,9 @@ class CampaignController extends Controller
             'open_rate' => $campaign->open_rate,
             'click_rate' => $campaign->click_rate,
             'sent_at' => $campaign->sent_at,
+            'scheduled_at' => $campaign->scheduled_at,
+            'frequency' => $campaign->frequency,
+            'next_run_at' => $campaign->next_run_at,
             'created_by' => $campaign->creator ? [
                 'id' => $campaign->creator->id,
                 'name' => $campaign->creator->first_name . ' ' . $campaign->creator->last_name,

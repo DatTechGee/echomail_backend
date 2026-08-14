@@ -7,6 +7,9 @@ use App\Http\Controllers\Api\CampaignController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\TemplateController;
+use App\Http\Controllers\Api\AuditLogController;
+use App\Http\Controllers\Api\WebhookController;
 
 Route::prefix('/v1')->group(function () {
     // Auth routes
@@ -31,7 +34,7 @@ Route::prefix('/v1')->group(function () {
 
     // Public newsletter routes
     Route::controller(NewsletterController::class)->group(function () {
-        Route::post('/newsletter/subscribe', 'subscribe');
+        Route::post('/newsletter/subscribe', 'subscribe')->middleware('throttle:10,1');
         Route::get('/newsletter/unsubscribe/{token}', 'unsubscribe');
     });
 
@@ -76,7 +79,23 @@ Route::prefix('/v1')->group(function () {
             Route::post('/recipient-preview', 'getRecipientPreview');
             Route::get('/{uuid}', 'show');
             Route::post('/{uuid}/send', 'send');
+            Route::post('/{uuid}/retry', 'retry');
             Route::post('/{uuid}/duplicate', 'duplicate');
+            Route::post('/{uuid}/test-send', 'testSend');
+            Route::get('/{uuid}/preview', 'preview');
+            Route::get('/{uuid}/recipients', 'recipients');
+            Route::get('/{uuid}/export', 'exportRecipients');
+            Route::post('/{uuid}/mark-bounced', 'markBounced');
+            Route::delete('/{uuid}', 'destroy');
+        });
+    });
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::controller(TemplateController::class)->prefix('templates')->group(function () {
+            Route::get('/', 'index');
+            Route::post('/', 'store');
+            Route::get('/{uuid}', 'show');
+            Route::put('/{uuid}', 'update');
             Route::delete('/{uuid}', 'destroy');
         });
     });
@@ -84,5 +103,26 @@ Route::prefix('/v1')->group(function () {
     // Payment notification
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/payment/send', [PaymentController::class, 'send']);
+    });
+
+    // Audit logs (Admin only)
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::controller(AuditLogController::class)->prefix('audit-logs')->group(function () {
+            Route::get('/', 'index');
+            Route::delete('/', 'destroy');
+        });
+    });
+
+    // Webhooks
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::controller(WebhookController::class)->prefix('webhooks')->group(function () {
+            Route::get('/', 'index');
+            Route::post('/', 'store');
+            Route::get('/{id}', 'show');
+            Route::put('/{id}', 'update');
+            Route::delete('/{id}', 'destroy');
+            Route::get('/{id}/deliveries', 'deliveries');
+            Route::post('/{id}/test', 'test');
+        });
     });
 });

@@ -1,0 +1,9 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # If the request already targets the public folder, stop rewriting
+    RewriteRule ^public($|/) - [L]
+
+    # Rewrite everything else into the Laravel public directory
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

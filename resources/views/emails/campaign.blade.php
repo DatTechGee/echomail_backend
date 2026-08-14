@@ -178,7 +178,17 @@
 
             <div class="footer">
                 <p>&copy; {{ date('Y') }} Levelup Xperience. All rights reserved.</p>
+                @if($unsubscribeUrl ?? false)
+                    <p>
+                        <a href="{{ $unsubscribeUrl }}" style="color: #4b5563; text-decoration: underline;">
+                            Unsubscribe from this newsletter
+                        </a>
+                    </p>
+                @endif
             </div>
+
+            {{-- Tracking pixel --}}
+            <img src="{{ $trackingPixelUrl ?? '' }}" alt="" width="1" height="1" style="display:none;" />
         </div>
     </div>
 </body>

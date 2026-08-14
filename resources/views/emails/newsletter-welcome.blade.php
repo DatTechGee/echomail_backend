@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Welcome to Levelup Xperience Community!</title>
+    <title>{{ $subscriber->status === 'pending' ? 'Confirm your subscription' : 'Welcome to Levelup Xperience Community!' }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
@@ -86,6 +86,31 @@
             color: #117550;
             font-weight: 600;
             margin-bottom: 10px;
+        }
+        .cta-box {
+            background: linear-gradient(135deg, #d1f5e3, #e0f4ec);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border: 2px solid #2ECC71;
+            text-align: center;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #2ECC71, #1A9B7F);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 17px;
+            font-weight: 700;
+            margin: 15px 0 5px;
+            box-shadow: 0 6px 15px rgba(26, 155, 127, 0.35);
+        }
+        .cta-hint {
+            font-size: 13px;
+            color: #117550;
+            margin-top: 10px;
         }
         .benefits {
             background: #f8fafc;
@@ -184,39 +209,64 @@
         <div class="divider"></div>
 
         <div class="content">
-            <div class="title">Welcome to Our Community!</div>
+            @if ($subscriber->status === 'pending')
+                <div class="title">Please Confirm Your Subscription</div>
 
-            <div class="message">
-                <p>Hi{{ $subscriber->name ? ' ' . $subscriber->name : '' }},</p>
-                <p>Thank you for joining the waitlist for <span class="brand-highlight">Levelup Xperience</span>! We're excited to have you as part of our growing community of freelancers, content creators, and lifelong learners.</p>
-            </div>
+                <div class="message">
+                    <p>Hi{{ $subscriber->name ? ' ' . $subscriber->name : '' }},</p>
+                    <p>Thanks for joining the waitlist for <span class="brand-highlight">Levelup Xperience</span>! To finish subscribing, please confirm your email address by clicking the button below.</p>
+                </div>
 
-            <div class="welcome-box">
-                <div class="welcome-icon">🎉</div>
-                <div class="welcome-text">You're on the Waitlist!</div>
-                <p style="color: #374151; margin: 0;">Be the first to know when we launch</p>
-            </div>
+                <div class="cta-box">
+                    <div class="welcome-icon">✉️</div>
+                    <div class="welcome-text">Confirm My Subscription</div>
+                    <p style="color: #374151; margin: 0;">One quick click and you're all set.</p>
+                    <a href="{{ $subscriber->verify_url }}" class="cta-button">Confirm Subscription</a>
+                    <div class="cta-hint">If the button doesn't work, copy this link into your browser:<br>{{ $subscriber->verify_url }}</div>
+                </div>
 
-            <div class="benefits">
-                <h3>What Awaits You:</h3>
-                <ul>
-                    <li>Connect with talented freelancers and creators worldwide</li>
-                    <li>Access exclusive learning resources and workshops</li>
-                    <li>Collaborate on exciting projects and opportunities</li>
-                    <li>Early access to community features and events</li>
-                    <li>Network with industry experts and mentors</li>
-                </ul>
-            </div>
+                <div class="message">
+                    <p>If you didn't sign up for this list, you can safely ignore this email and your address will be removed automatically.</p>
+                </div>
 
-            <div class="message">
-                <p>We're building something special and can't wait to share it with you. As a waitlist member, you'll get priority access when we launch and exclusive benefits reserved just for early supporters.</p>
-                <p>Stay tuned for updates on our progress!</p>
-                <p>Best regards,<br>The Levelup Xperience Team</p>
-            </div>
+                <div class="unsubscribe">
+                    <p>Manage your subscription preferences <a href="{{ $subscriber->preferences_url }}">here</a>.</p>
+                </div>
+            @else
+                <div class="title">Welcome to Our Community!</div>
 
-            <!-- <div class="unsubscribe">
-                <p>Don't want to receive these emails? <a href="{{ $subscriber->unsubscribe_url }}">Unsubscribe here</a></p>
-            </div> -->
+                <div class="message">
+                    <p>Hi{{ $subscriber->name ? ' ' . $subscriber->name : '' }},</p>
+                    <p>Thank you for joining the waitlist for <span class="brand-highlight">Levelup Xperience</span>! We're excited to have you as part of our growing community of freelancers, content creators, and lifelong learners.</p>
+                </div>
+
+                <div class="welcome-box">
+                    <div class="welcome-icon">🎉</div>
+                    <div class="welcome-text">You're on the Waitlist!</div>
+                    <p style="color: #374151; margin: 0;">Be the first to know when we launch</p>
+                </div>
+
+                <div class="benefits">
+                    <h3>What Awaits You:</h3>
+                    <ul>
+                        <li>Connect with talented freelancers and creators worldwide</li>
+                        <li>Access exclusive learning resources and workshops</li>
+                        <li>Collaborate on exciting projects and opportunities</li>
+                        <li>Early access to community features and events</li>
+                        <li>Network with industry experts and mentors</li>
+                    </ul>
+                </div>
+
+                <div class="message">
+                    <p>We're building something special and can't wait to share it with you. As a waitlist member, you'll get priority access when we launch and exclusive benefits reserved just for early supporters.</p>
+                    <p>Stay tuned for updates on our progress!</p>
+                    <p>Best regards,<br>The Levelup Xperience Team</p>
+                </div>
+
+                <div class="unsubscribe">
+                    <p>Don't want to receive these emails? <a href="{{ $subscriber->unsubscribe_url }}">Unsubscribe here</a> · <a href="{{ $subscriber->preferences_url }}">Preferences</a></p>
+                </div>
+            @endif
         </div>
 
         <div class="footer">
