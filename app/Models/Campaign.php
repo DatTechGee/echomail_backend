@@ -122,7 +122,7 @@ class Campaign extends Model
                 }
 
                 // Get all newsletter subscribers (avoid duplicates)
-                $newsletters = NewsletterSubscriber::active()->get();
+                $newsletters = NewsletterSubscriber::whereIn('status', ['active', 'pending'])->get();
                 foreach ($newsletters as $subscriber) {
                     if (!in_array($subscriber->email, $recipients)) {
                         $recipients[] = $subscriber->email;
@@ -131,7 +131,7 @@ class Campaign extends Model
                 break;
 
             case 'newsletter':
-                $newsletters = NewsletterSubscriber::active()->get();
+                $newsletters = NewsletterSubscriber::whereIn('status', ['active', 'pending'])->get();
                 foreach ($newsletters as $subscriber) {
                     $recipients[] = $subscriber->email;
                 }
