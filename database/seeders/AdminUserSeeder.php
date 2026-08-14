@@ -19,7 +19,7 @@ class AdminUserSeeder extends Seeder
             $admin->update([
                 'email' => 'admin@admin.com',
                 'phone' => '+1234567890',
-                'password' => Hash::make('password123'), // Change this in production
+                'password' => Hash::make('Admin@12345'),
                 'status' => 'active',
                 'email_verified_at' => now(),
                 'two_factor_enabled' => false,
@@ -33,7 +33,7 @@ class AdminUserSeeder extends Seeder
             'last_name' => 'Admin',
             'email' => 'admin@admin.com',
             'phone' => '+1234567890',
-            'password' => Hash::make('password123'), // Change this in production
+            'password' => Hash::make('Admin@12345'),
             'status' => 'active',
             'email_verified_at' => now(),
             'two_factor_enabled' => false,
