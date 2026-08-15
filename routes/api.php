@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\NewsletterController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CampaignAbTestController;
 use App\Http\Controllers\Api\CampaignController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\ImageController;
@@ -87,6 +88,16 @@ Route::prefix('/v1')->group(function () {
             Route::get('/{uuid}/export', 'exportRecipients');
             Route::post('/{uuid}/mark-bounced', 'markBounced');
             Route::delete('/{uuid}', 'destroy');
+        });
+
+        // A/B Testing routes
+        Route::controller(CampaignAbTestController::class)->prefix('campaigns/{campaignUuid}/ab-tests')->group(function () {
+            Route::get('/', 'listForCampaign');
+            Route::post('/', 'store');
+            Route::get('/{abTestId}', 'show');
+            Route::post('/{abTestId}/start', 'start');
+            Route::post('/{abTestId}/select-winner', 'selectWinner');
+            Route::delete('/{abTestId}', 'destroy');
         });
     });
 
