@@ -17,6 +17,8 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             CampaignTemplateSeeder::class,
             DemoSeeder::class,
+            AutomationSeeder::class,
+            AnalyticsSeeder::class,
         ]);
     }
 }
