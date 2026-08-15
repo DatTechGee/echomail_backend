@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\NewsletterController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\AutomationController;
 use App\Http\Controllers\Api\CampaignAbTestController;
 use App\Http\Controllers\Api\CampaignController;
 use App\Http\Controllers\Api\ContactController;
@@ -98,6 +99,20 @@ Route::prefix('/v1')->group(function () {
             Route::post('/{abTestId}/start', 'start');
             Route::post('/{abTestId}/select-winner', 'selectWinner');
             Route::delete('/{abTestId}', 'destroy');
+        });
+
+        // Automation routes
+        Route::controller(AutomationController::class)->prefix('automations')->group(function () {
+            Route::get('/', 'index');
+            Route::post('/', 'store');
+            Route::get('/stats', 'stats');
+            Route::get('/{uuid}', 'show');
+            Route::put('/{uuid}', 'update');
+            Route::delete('/{uuid}', 'destroy');
+            Route::post('/{uuid}/activate', 'activate');
+            Route::post('/{uuid}/pause', 'pause');
+            Route::post('/{uuid}/enroll', 'enroll');
+            Route::get('/{uuid}/enrollments', 'enrollments');
         });
     });
 
