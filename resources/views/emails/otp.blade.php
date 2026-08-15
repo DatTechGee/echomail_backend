@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Levelup Xperience - Your Verification Code</title>
+    <title>EchoMail - Your Verification Code</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
@@ -21,7 +21,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
         .header {
-            background: linear-gradient(135deg, #2ECC71 0%, #1A9B7F 100%);
+            background: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);
             padding: 40px 30px;
             text-align: center;
             color: white;
@@ -34,7 +34,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(46, 204, 113, 0.95) 0%, rgba(26, 155, 127, 0.95) 100%);
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.95) 0%, rgba(30, 64, 175, 0.95) 100%);
         }
         .header-content {
             position: relative;
@@ -71,15 +71,15 @@
             line-height: 1.7;
         }
         .otp-container {
-            background: linear-gradient(135deg, #d1f5e3, #e0f4ec);
+            background: linear-gradient(135deg, #dbeafe, #eff6ff);
             padding: 30px;
             border-radius: 15px;
             margin: 30px 0;
-            border: 2px dashed #2ECC71;
+            border: 2px dashed #2563EB;
             position: relative;
         }
         .otp-container::before {
-            content: '🔐';
+            content: '\1F510';
             position: absolute;
             top: -15px;
             left: 50%;
@@ -91,7 +91,7 @@
         }
         .otp-label {
             font-size: 14px;
-            color: #117550;
+            color: #1E40AF;
             font-weight: 600;
             margin-bottom: 15px;
             text-transform: uppercase;
@@ -106,14 +106,14 @@
             background: white;
             padding: 20px;
             border-radius: 10px;
-            border: 2px solid #2ECC71;
+            border: 2px solid #2563EB;
             display: inline-block;
             margin: 10px 0;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
         .expiry-notice {
             font-size: 14px;
-            color: #117550;
+            color: #1E40AF;
             font-weight: 600;
             margin-top: 15px;
         }
@@ -145,12 +145,12 @@
             font-size: 14px;
         }
         .divider {
-            background: linear-gradient(135deg, #2ECC71, #1A9B7F);
+            background: linear-gradient(135deg, #2563EB, #1E40AF);
             height: 4px;
             width: 100%;
         }
         .brand-highlight {
-            color: #1A9B7F;
+            color: #2563EB;
             font-weight: 600;
         }
 
@@ -180,8 +180,8 @@
     <div class="container">
         <div class="header">
             <div class="header-content">
-                <div class="logo">Levelup Xperience</div>
-                <div class="tagline">Connect • Collaborate • Grow</div>
+                <div class="logo">EchoMail</div>
+                <div class="tagline">Send emails that get opened</div>
             </div>
         </div>
 
@@ -191,24 +191,24 @@
             <div class="title">Verification Required</div>
 
             <div class="message">
-                <p>We've received a request that requires verification of your identity. Please use the verification code below to complete your action securely on your <span class="brand-highlight">Levelup Xperience</span> dashboard.</p>
+                <p>We've received a request that requires verification of your identity. Please use the verification code below to complete your action securely on your <span class="brand-highlight">EchoMail</span> dashboard.</p>
             </div>
 
             <div class="otp-container">
                 <div class="otp-label">Your Verification Code</div>
                 <div class="otp-code">{{ $otp }}</div>
-                <div class="expiry-notice">⏰ This code expires in 10 minutes</div>
+                <div class="expiry-notice">This code expires in 10 minutes</div>
             </div>
 
             <div class="security-note">
-                <h4>🛡️ Security Reminder</h4>
-                <p><strong>Never share this code with anyone.</strong> The Levelup Xperience team will never ask for your verification code via phone, email, or any other method. If you didn't request this code, please ignore this email or contact our support team immediately.</p>
+                <h4>Security Reminder</h4>
+                <p><strong>Never share this code with anyone.</strong> The EchoMail team will never ask for your verification code via phone, email, or any other method. If you didn't request this code, please ignore this email or contact our support team immediately.</p>
             </div>
         </div>
 
         <div class="footer">
-            <p>&copy; {{ date('Y') }} Levelup Xperience. All rights reserved.</p>
-            <p>Empowering communities to grow together.</p>
+            <p>&copy; {{ date('Y') }} EchoMail. All rights reserved.</p>
+            <p>Send emails that get opened.</p>
         </div>
     </div>
 </body>

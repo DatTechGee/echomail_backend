@@ -23,8 +23,8 @@ class NewsletterWelcomeMail extends Mailable
     public function envelope(): Envelope
     {
         $subject = $this->subscriber->status === 'pending'
-            ? 'Please confirm your subscription to Levelup Xperience'
-            : 'Welcome to Levelup Xperience Community!';
+            ? 'Please confirm your subscription to EchoMail'
+            : 'Welcome to EchoMail!';
 
         return new Envelope(
             subject: $subject,

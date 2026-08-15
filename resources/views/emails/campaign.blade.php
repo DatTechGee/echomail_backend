@@ -10,10 +10,10 @@
             color: #1f2937;
             margin: 0;
             padding: 0;
-            background-color: #2ECC71;
+            background-color: #2563EB;
         }
         .outer-wrapper {
-            background-color: #2ECC71;
+            background-color: #2563EB;
             padding: 20px 20px 30px 20px;
         }
         .logo-section {
@@ -76,12 +76,12 @@
             color: #1f2937;
         }
         .content a {
-            color: #1A9B7F;
+            color: #2563EB;
             text-decoration: underline;
             font-weight: 500;
         }
         .content a:hover {
-            color: #147a63;
+            color: #1d4ed8;
             text-decoration: underline;
         }
         .content code {
@@ -168,7 +168,7 @@
 <body>
     <div class="outer-wrapper">
         <div class="logo-section">
-            <div class="logo">Levelup Xperience</div>
+            <div class="logo">EchoMail</div>
         </div>
 
         <div class="container">
@@ -177,7 +177,7 @@
             </div>
 
             <div class="footer">
-                <p>&copy; {{ date('Y') }} Levelup Xperience. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} EchoMail. All rights reserved.</p>
                 @if($unsubscribeUrl ?? false)
                     <p>
                         <a href="{{ $unsubscribeUrl }}" style="color: #4b5563; text-decoration: underline;">

@@ -8,7 +8,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #f0fdf4 0%, #e6f7ef 100%);
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -20,12 +20,12 @@
             width: 100%;
             background: #ffffff;
             border-radius: 16px;
-            box-shadow: 0 20px 50px rgba(26, 155, 127, 0.15);
+            box-shadow: 0 20px 50px rgba(37, 99, 235, 0.15);
             overflow: hidden;
             text-align: center;
         }
         .banner {
-            background: linear-gradient(135deg, #2ECC71, #1A9B7F);
+            background: linear-gradient(135deg, #2563EB, #1E40AF);
             padding: 40px 20px;
             color: white;
         }
@@ -55,7 +55,7 @@
         .home-link {
             display: inline-block;
             margin-top: 24px;
-            background: linear-gradient(135deg, #2ECC71, #1A9B7F);
+            background: linear-gradient(135deg, #2563EB, #1E40AF);
             color: white;
             text-decoration: none;
             padding: 12px 32px;
@@ -68,8 +68,8 @@
 <body>
     <div class="card">
         <div class="banner">
-            <div class="logo">Levelup Xperience</div>
-            <div class="icon">✅</div>
+            <div class="logo">EchoMail</div>
+            <div class="icon">&#10004;</div>
         </div>
         <div class="body">
             <div class="title">Subscription Confirmed</div>

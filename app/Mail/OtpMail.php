@@ -22,7 +22,7 @@ class OtpMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Levelup Xperience - Your Verification Code',
+            subject: 'EchoMail - Your Verification Code',
         );
     }
 

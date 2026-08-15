@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ $subscriber->status === 'pending' ? 'Confirm your subscription' : 'Welcome to Levelup Xperience Community!' }}</title>
+    <title>{{ $subscriber->status === 'pending' ? 'Confirm your subscription' : 'Welcome to EchoMail!' }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
@@ -21,7 +21,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
         .header {
-            background: linear-gradient(135deg, #2ECC71 0%, #1A9B7F 100%);
+            background: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);
             padding: 40px 30px;
             text-align: center;
             color: white;
@@ -34,7 +34,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(46, 204, 113, 0.95) 0%, rgba(26, 155, 127, 0.95) 100%);
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.95) 0%, rgba(30, 64, 175, 0.95) 100%);
         }
         .header-content {
             position: relative;
@@ -70,11 +70,11 @@
             line-height: 1.7;
         }
         .welcome-box {
-            background: linear-gradient(135deg, #d1f5e3, #e0f4ec);
+            background: linear-gradient(135deg, #dbeafe, #eff6ff);
             padding: 30px;
             border-radius: 15px;
             margin: 30px 0;
-            border: 2px solid #2ECC71;
+            border: 2px solid #2563EB;
             text-align: center;
         }
         .welcome-icon {
@@ -83,21 +83,21 @@
         }
         .welcome-text {
             font-size: 18px;
-            color: #117550;
+            color: #1E40AF;
             font-weight: 600;
             margin-bottom: 10px;
         }
         .cta-box {
-            background: linear-gradient(135deg, #d1f5e3, #e0f4ec);
+            background: linear-gradient(135deg, #dbeafe, #eff6ff);
             padding: 30px;
             border-radius: 15px;
             margin: 30px 0;
-            border: 2px solid #2ECC71;
+            border: 2px solid #2563EB;
             text-align: center;
         }
         .cta-button {
             display: inline-block;
-            background: linear-gradient(135deg, #2ECC71, #1A9B7F);
+            background: linear-gradient(135deg, #2563EB, #1E40AF);
             color: #ffffff;
             text-decoration: none;
             padding: 16px 40px;
@@ -105,11 +105,11 @@
             font-size: 17px;
             font-weight: 700;
             margin: 15px 0 5px;
-            box-shadow: 0 6px 15px rgba(26, 155, 127, 0.35);
+            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.35);
         }
         .cta-hint {
             font-size: 13px;
-            color: #117550;
+            color: #1E40AF;
             margin-top: 10px;
         }
         .benefits {
@@ -138,10 +138,10 @@
             line-height: 1.6;
         }
         .benefits li::before {
-            content: '✓';
+            content: '\2713';
             position: absolute;
             left: 0;
-            color: #2ECC71;
+            color: #2563EB;
             font-weight: bold;
             font-size: 18px;
         }
@@ -171,12 +171,12 @@
             font-size: 14px;
         }
         .divider {
-            background: linear-gradient(135deg, #2ECC71, #1A9B7F);
+            background: linear-gradient(135deg, #2563EB, #1E40AF);
             height: 4px;
             width: 100%;
         }
         .brand-highlight {
-            color: #1A9B7F;
+            color: #2563EB;
             font-weight: 600;
         }
 
@@ -201,8 +201,8 @@
     <div class="container">
         <div class="header">
             <div class="header-content">
-                <div class="logo">Levelup Xperience</div>
-                <div class="tagline">Connect • Collaborate • Grow</div>
+                <div class="logo">EchoMail</div>
+                <div class="tagline">Send emails that get opened</div>
             </div>
         </div>
 
@@ -214,11 +214,11 @@
 
                 <div class="message">
                     <p>Hi{{ $subscriber->name ? ' ' . $subscriber->name : '' }},</p>
-                    <p>Thanks for joining the waitlist for <span class="brand-highlight">Levelup Xperience</span>! To finish subscribing, please confirm your email address by clicking the button below.</p>
+                    <p>Thanks for subscribing to <span class="brand-highlight">EchoMail</span>! To finish subscribing, please confirm your email address by clicking the button below.</p>
                 </div>
 
                 <div class="cta-box">
-                    <div class="welcome-icon">✉️</div>
+                    <div class="welcome-icon">&#9993;</div>
                     <div class="welcome-text">Confirm My Subscription</div>
                     <p style="color: #374151; margin: 0;">One quick click and you're all set.</p>
                     <a href="{{ $subscriber->verify_url }}" class="cta-button">Confirm Subscription</a>
@@ -233,45 +233,43 @@
                     <p>Manage your subscription preferences <a href="{{ $subscriber->preferences_url }}">here</a>.</p>
                 </div>
             @else
-                <div class="title">Welcome to Our Community!</div>
+                <div class="title">Welcome to EchoMail!</div>
 
                 <div class="message">
                     <p>Hi{{ $subscriber->name ? ' ' . $subscriber->name : '' }},</p>
-                    <p>Thank you for joining the waitlist for <span class="brand-highlight">Levelup Xperience</span>! We're excited to have you as part of our growing community of freelancers, content creators, and lifelong learners.</p>
+                    <p>Thank you for subscribing to <span class="brand-highlight">EchoMail</span>! We're excited to have you as part of our growing community.</p>
                 </div>
 
                 <div class="welcome-box">
-                    <div class="welcome-icon">🎉</div>
-                    <div class="welcome-text">You're on the Waitlist!</div>
-                    <p style="color: #374151; margin: 0;">Be the first to know when we launch</p>
+                    <div class="welcome-icon">&#127881;</div>
+                    <div class="welcome-text">You're Subscribed!</div>
+                    <p style="color: #374151; margin: 0;">You'll receive our latest updates and campaigns</p>
                 </div>
 
                 <div class="benefits">
                     <h3>What Awaits You:</h3>
                     <ul>
-                        <li>Connect with talented freelancers and creators worldwide</li>
-                        <li>Access exclusive learning resources and workshops</li>
-                        <li>Collaborate on exciting projects and opportunities</li>
-                        <li>Early access to community features and events</li>
-                        <li>Network with industry experts and mentors</li>
+                        <li>Create and send beautiful email campaigns</li>
+                        <li>Track opens, clicks, and engagement in real time</li>
+                        <li>Automate your newsletters and workflows</li>
+                        <li>Reach every inbox with confidence</li>
                     </ul>
                 </div>
 
                 <div class="message">
-                    <p>We're building something special and can't wait to share it with you. As a waitlist member, you'll get priority access when we launch and exclusive benefits reserved just for early supporters.</p>
-                    <p>Stay tuned for updates on our progress!</p>
-                    <p>Best regards,<br>The Levelup Xperience Team</p>
+                    <p>We're building something special and can't wait to share it with you. Stay tuned for updates!</p>
+                    <p>Best regards,<br>The EchoMail Team</p>
                 </div>
 
                 <div class="unsubscribe">
-                    <p>Don't want to receive these emails? <a href="{{ $subscriber->unsubscribe_url }}">Unsubscribe here</a> · <a href="{{ $subscriber->preferences_url }}">Preferences</a></p>
+                    <p>Don't want to receive these emails? <a href="{{ $subscriber->unsubscribe_url }}">Unsubscribe here</a> &middot; <a href="{{ $subscriber->preferences_url }}">Preferences</a></p>
                 </div>
             @endif
         </div>
 
         <div class="footer">
-            <p>&copy; {{ date('Y') }} Levelup Xperience. All rights reserved.</p>
-            <p>Empowering communities to grow together.</p>
+            <p>&copy; {{ date('Y') }} EchoMail. All rights reserved.</p>
+            <p>Send emails that get opened.</p>
         </div>
     </div>
 </body>

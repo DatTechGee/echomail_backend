@@ -8,7 +8,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #f0fdf4 0%, #e6f7ef 100%);
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -20,11 +20,11 @@
             width: 100%;
             background: #ffffff;
             border-radius: 16px;
-            box-shadow: 0 20px 50px rgba(26, 155, 127, 0.15);
+            box-shadow: 0 20px 50px rgba(37, 99, 235, 0.15);
             overflow: hidden;
         }
         .banner {
-            background: linear-gradient(135deg, #2ECC71, #1A9B7F);
+            background: linear-gradient(135deg, #2563EB, #1E40AF);
             padding: 30px 20px;
             color: white;
             text-align: center;
@@ -43,9 +43,9 @@
             padding: 30px;
         }
         .status {
-            background: #ecfdf5;
-            border: 1px solid #a7f3d0;
-            color: #065f46;
+            background: #eff6ff;
+            border: 1px solid #93c5fd;
+            color: #1e40af;
             padding: 12px 16px;
             border-radius: 8px;
             font-size: 14px;
@@ -85,13 +85,13 @@
         input[type="checkbox"] {
             width: 22px;
             height: 22px;
-            accent-color: #1A9B7F;
+            accent-color: #2563EB;
             cursor: pointer;
             margin-top: 2px;
         }
         .save {
             width: 100%;
-            background: linear-gradient(135deg, #2ECC71, #1A9B7F);
+            background: linear-gradient(135deg, #2563EB, #1E40AF);
             color: white;
             border: none;
             padding: 14px;
@@ -110,7 +110,7 @@
             font-size: 13px;
         }
         .footer-links a {
-            color: #1A9B7F;
+            color: #2563EB;
             text-decoration: none;
         }
     </style>
@@ -118,7 +118,7 @@
 <body>
     <div class="card">
         <div class="banner">
-            <div class="logo">Levelup Xperience</div>
+            <div class="logo">EchoMail</div>
             <div class="subtitle">Email Preferences</div>
         </div>
         <div class="body">
@@ -127,15 +127,15 @@
             @endif
 
             <div class="intro">
-                Manage what you receive from <strong>Levelup Xperience</strong> for <strong>{{ $subscriber->email }}</strong>.
+                Manage what you receive from <strong>EchoMail</strong> for <strong>{{ $subscriber->email }}</strong>.
             </div>
 
             <form method="POST" action="{{ route('newsletter.preferences.update', $subscriber->unsubscribe_token) }}">
                 @csrf
                 <div class="option">
                     <div class="option-text">
-                        <strong>Community updates</strong>
-                        <span>News about the community, new features, and what's happening.</span>
+                        <strong>Campaign updates</strong>
+                        <span>News about new features, tools, and what's happening.</span>
                     </div>
                     <input type="checkbox" name="email_updates" value="1"
                         {{ ($subscriber->preferences['email_updates'] ?? true) ? 'checked' : '' }}>
