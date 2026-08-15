@@ -11,14 +11,13 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        $admin = User::where('email', 'admin@admin.com')
-            ->orWhere('email', 'admin@cashapp.com')
-            ->first();
+        $admin = User::where('email', 'admin@admin.com')->first();
 
         if ($admin) {
             $admin->update([
-                'email' => 'admin@admin.com',
-                'phone' => '+1234567890',
+                'first_name' => 'EchoMail',
+                'last_name' => 'Admin',
+                'phone' => '+234 900 000 0000',
                 'password' => Hash::make('Admin@12345'),
                 'status' => 'active',
                 'email_verified_at' => now(),
@@ -32,7 +31,7 @@ class AdminUserSeeder extends Seeder
             'first_name' => 'EchoMail',
             'last_name' => 'Admin',
             'email' => 'admin@admin.com',
-            'phone' => '+1234567890',
+            'phone' => '+234 900 000 0000',
             'password' => Hash::make('Admin@12345'),
             'status' => 'active',
             'email_verified_at' => now(),
