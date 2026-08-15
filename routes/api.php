@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\TemplateController;
 use App\Http\Controllers\Api\AuditLogController;
 use App\Http\Controllers\Api\WebhookController;
+use App\Http\Controllers\Api\SettingsController;
 
 Route::prefix('/v1')->group(function () {
     // Auth routes
@@ -149,6 +150,21 @@ Route::prefix('/v1')->group(function () {
             Route::delete('/{id}', 'destroy');
             Route::get('/{id}/deliveries', 'deliveries');
             Route::post('/{id}/test', 'test');
+        });
+    });
+
+    // Developer Settings (SMTP + API Keys)
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::controller(SettingsController::class)->prefix('settings')->group(function () {
+            Route::get('/smtp', 'getSmtpSettings');
+            Route::put('/smtp', 'updateSmtpSettings');
+            Route::post('/smtp/test', 'testSmtp');
+            Route::post('/smtp/test-connection', 'testSmtpConnection');
+
+            Route::get('/api-keys', 'listApiKeys');
+            Route::post('/api-keys', 'createApiKey');
+            Route::post('/api-keys/{id}/toggle', 'toggleApiKey');
+            Route::delete('/api-keys/{id}', 'revokeApiKey');
         });
     });
 });
