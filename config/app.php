@@ -40,6 +40,8 @@ return [
 
     'tick_token' => env('TICK_TOKEN', ''),
 
+    'frontend_url' => env('FRONTEND_URL', 'https://echomail-frontend.vercel.app'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode

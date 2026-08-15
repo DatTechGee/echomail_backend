@@ -26,7 +26,8 @@ Route::get('/unsubscribe/{token}', function (string $token) {
         $subscriber->unsubscribe();
     }
 
-    return response('You have been unsubscribed from the newsletter.', 200);
+    $frontendUrl = config('app.frontend_url', 'https://echomail-frontend.vercel.app');
+    return redirect("{$frontendUrl}/unsubscribe/{$token}");
 });
 
 Route::get('/verify/{token}', [NewsletterOptInController::class, 'verify'])
