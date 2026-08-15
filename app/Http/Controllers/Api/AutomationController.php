@@ -29,7 +29,7 @@ class AutomationController extends Controller
 
         $automations = $query->paginate($request->get('per_page', 15));
 
-        return ResponseHelper::success('Automations retrieved', [
+        return ResponseHelper::success(1, 'Automations retrieved', [
             'automations' => $automations,
         ]);
     }
@@ -70,7 +70,7 @@ class AutomationController extends Controller
                 ]);
             }
 
-            return ResponseHelper::success('Automation created', [
+            return ResponseHelper::success(1, 'Automation created', [
                 'automation' => $automation->load('steps'),
             ], 201);
         });
@@ -86,7 +86,7 @@ class AutomationController extends Controller
             return ResponseHelper::error(0, 'Automation not found', [], 404);
         }
 
-        return ResponseHelper::success('Automation retrieved', [
+        return ResponseHelper::success(1, 'Automation retrieved', [
             'automation' => $automation,
         ]);
     }
@@ -127,7 +127,7 @@ class AutomationController extends Controller
                 }
             }
 
-            return ResponseHelper::success('Automation updated', [
+            return ResponseHelper::success(1, 'Automation updated', [
                 'automation' => $automation->fresh()->load('steps'),
             ]);
         });
@@ -145,7 +145,7 @@ class AutomationController extends Controller
 
         $automation->update(['status' => 'active']);
 
-        return ResponseHelper::success('Automation activated', [
+        return ResponseHelper::success(1, 'Automation activated', [
             'automation' => $automation,
         ]);
     }
@@ -159,7 +159,7 @@ class AutomationController extends Controller
 
         $automation->update(['status' => 'paused']);
 
-        return ResponseHelper::success('Automation paused', [
+        return ResponseHelper::success(1, 'Automation paused', [
             'automation' => $automation,
         ]);
     }
@@ -203,7 +203,7 @@ class AutomationController extends Controller
 
         $automation->increment('total_enrolled');
 
-        return ResponseHelper::success('Enrolled in automation', [
+        return ResponseHelper::success(1, 'Enrolled in automation', [
             'enrollment' => $enrollment,
         ], 201);
     }
@@ -219,7 +219,7 @@ class AutomationController extends Controller
             ->orderByDesc('created_at')
             ->paginate(20);
 
-        return ResponseHelper::success('Enrollments retrieved', [
+        return ResponseHelper::success(1, 'Enrollments retrieved', [
             'enrollments' => $enrollments,
         ]);
     }
@@ -236,7 +236,7 @@ class AutomationController extends Controller
 
         $automation->delete();
 
-        return ResponseHelper::success('Automation deleted');
+        return ResponseHelper::success(1, 'Automation deleted');
     }
 
     public function stats()
@@ -250,7 +250,7 @@ class AutomationController extends Controller
             ->whereHas('automation', fn($q) => $q->where('user_id', $userId))
             ->count();
 
-        return ResponseHelper::success('Automation stats', [
+        return ResponseHelper::success(1, 'Automation stats', [
             'stats' => [
                 'total_automations' => $total,
                 'active_automations' => $active,

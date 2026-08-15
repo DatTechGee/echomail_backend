@@ -52,7 +52,7 @@ class CampaignAbTestController extends Controller
                 ]);
             }
 
-            return ResponseHelper::success('A/B test created', [
+            return ResponseHelper::success(1, 'A/B test created', [
                 'ab_test' => $abTest->load('variants'),
             ]);
         });
@@ -68,7 +68,7 @@ class CampaignAbTestController extends Controller
             return ResponseHelper::error(0, 'A/B test not found', [], 404);
         }
 
-        return ResponseHelper::success('A/B test retrieved', [
+        return ResponseHelper::success(1, 'A/B test retrieved', [
             'ab_test' => $abTest,
         ]);
     }
@@ -85,7 +85,7 @@ class CampaignAbTestController extends Controller
 
         $abTest->update(['status' => 'running']);
 
-        return ResponseHelper::success('A/B test started', [
+        return ResponseHelper::success(1, 'A/B test started', [
             'ab_test' => $abTest->fresh('variants'),
         ]);
     }
@@ -123,7 +123,7 @@ class CampaignAbTestController extends Controller
                 ]);
             }
 
-            return ResponseHelper::success('Winner selected and campaign updated', [
+            return ResponseHelper::success(1, 'Winner selected and campaign updated', [
                 'ab_test' => $abTest->fresh('variants'),
                 'winner' => $winner,
             ]);
@@ -142,7 +142,7 @@ class CampaignAbTestController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        return ResponseHelper::success('A/B tests retrieved', [
+        return ResponseHelper::success(1, 'A/B tests retrieved', [
             'ab_tests' => $abTests,
         ]);
     }
@@ -159,6 +159,6 @@ class CampaignAbTestController extends Controller
 
         $abTest->delete();
 
-        return ResponseHelper::success('A/B test deleted');
+        return ResponseHelper::success(1, 'A/B test deleted');
     }
 }
